@@ -15,7 +15,7 @@ const userSchema = new Schema(
       default: false,
     },
     cart: [],
-    wishList: [],
+    wishlist: [],
   },
   { timestamps: true }
 );

@@ -13,4 +13,7 @@ userRouter.get("/single/:userId", auth, userController.getSingleUser);
 //User's cart route
 userRouter.put("/cart/:userId", auth, userController.updateCart);
 
+userRouter.put("/wishlist/:userId", auth, userController.updateWishlist);
+
+
 module.exports = userRouter;

@@ -143,13 +143,53 @@ const userController = {
       userDetails.cart = cartDetails;
       await userDetails.save();
 
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "Cart updated.",
-          data: userDetails.cart,
-        });
+      res.status(200).json({
+        success: true,
+        message: "Cart updated.",
+        data: userDetails.cart,
+      });
+    } catch (error) {
+      createError(next, "Server error", 500);
+    }
+  },
+
+  //Handles wishlist updates
+  updateWishlist: async (req, res, next) => {
+    try {
+      //Extract wishlist details from req body
+      const { wishlistDetails } = req.body;
+
+      if (!wishlistDetails) {
+        return createError(next, "wishlist details are required.", 400);
+      }
+
+      if (!Array.isArray(wishlistDetails)) {
+        return createError(next, "Wishlist must be an array.", 400);
+      }
+
+      //Extract user id from req params
+      const { userId } = req.params;
+
+      if (!userId) {
+        return createError(next, "User id is required.", 400);
+      }
+
+      //Fetch user details from db
+      const userDetails = await User.findById(userId);
+
+      if (!userDetails) {
+        return createError(next, "User does not exist.", 404);
+      }
+
+      //Replace wishlist in db with the latest wishlist details
+      userDetails.wishlist = wishlistDetails;
+      await userDetails.save();
+
+      res.status(200).json({
+        success: true,
+        message: "Wishlist updated.",
+        data: userDetails.wishlist,
+      });
     } catch (error) {
       createError(next, "Server error", 500);
     }
