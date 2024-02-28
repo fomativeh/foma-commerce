@@ -10,9 +10,7 @@ userRouter.post("/auth/signin", userController.signIn);
 //Fetch user route
 userRouter.get("/single/:userId", auth, userController.getSingleUser);
 
-//User's cart routes
-userRouter.post("/cart/:userId", auth, userController.addToCart);
+//User's cart route
 userRouter.put("/cart/:userId", auth, userController.updateCart);
-userRouter.delete("/cart/:userId", auth, userController.deleteCart);
 
 module.exports = userRouter;

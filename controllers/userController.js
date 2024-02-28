@@ -100,12 +100,58 @@ const userController = {
       }
 
       //Assign to new variable for readability
-      let userData = userExists
+      let userData = userExists;
 
-      res.status(200).json({ success: true, message: "User data fetched", data: userData});
+      res
+        .status(200)
+        .json({ success: true, message: "User data fetched", data: userData });
     } catch (error) {
       // console.log(error)
       createError(next, "Server error.", 500);
+    }
+  },
+
+  //Handles cart updates
+  updateCart: async (req, res, next) => {
+    try {
+      //Extract cart details from req body
+      const { cartDetails } = req.body;
+
+      if (!cartDetails) {
+        return createError(next, "Cart details are required.", 400);
+      }
+
+      if (!Array.isArray(cartDetails)) {
+        return createError(next, "Cart must be an array.", 400);
+      }
+
+      //Extract user id from req params
+      const { userId } = req.params;
+
+      if (!userId) {
+        return createError(next, "User id is required.", 400);
+      }
+
+      //Fetch user details from db
+      const userDetails = await User.findById(userId);
+
+      if (!userDetails) {
+        return createError(next, "User does not exist.", 404);
+      }
+
+      //Replace cart in db with the latest cart details
+      userDetails.cart = cartDetails;
+      await userDetails.save();
+
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "Cart updated.",
+          data: userDetails.cart,
+        });
+    } catch (error) {
+      createError(next, "Server error", 500);
     }
   },
 };
