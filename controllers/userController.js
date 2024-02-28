@@ -94,7 +94,7 @@ const userController = {
     }
 
     try {
-      const userExists = await User.findById({ userId });
+      const userExists = await User.findById(userId);
       if (!userExists) {
         return createError(next, "User does not exist.", 404);
       }

@@ -14,7 +14,7 @@ const vendorController = {
     }
 
     try {
-      const vendorApplicant = await User.findById({ userId });
+      const vendorApplicant = await User.findById(userId);
       if (!vendorApplicant) {
         return createError(next, "There's no user with this userId.", 404);
       }
@@ -85,7 +85,7 @@ const vendorController = {
     }
 
     try {
-      const vendorExists = await Vendor.findById({ vendorId });
+      const vendorExists = await Vendor.findById(vendorId);
       if (!vendorExists) {
         return createError(next, "Vendor does not exist", 404);
       }
@@ -103,17 +103,14 @@ const vendorController = {
 
   //Update a vendor's details
   update: async (req, res, next) => {
-
     //Vendor info is assigned to req object by vendor auth middleware
-    const vendorInfo = req.vendorInfo
+    const vendorInfo = req.vendorInfo;
 
     //Extract the only details that client's are allowed to update
     const { storeName, storeDescription, logo, banner } =
       req.body.detailsToUpdate;
 
     try {
-
-
       //Check if client provided any details to update
       if (!storeName && !storeDescription && !logo && !banner) {
         return createError(next, 404, "No details to update.");

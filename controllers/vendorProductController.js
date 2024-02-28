@@ -1,9 +1,10 @@
 const { default: mongoose } = require("mongoose");
 const createError = require("../helpers/createError");
-const Product = require("../schemas/productSchema");
 const Category = require("../schemas/categorySchema");
 const uploadImages = require("../helpers/uploadImages");
 const Review = require("../schemas/reviewSchema");
+const VendorProduct = require("../schemas/vendorProductSchema");
+const Vendor = require("../schemas/vendorSchema");
 const cloudinary = require("cloudinary").v2;
 
 // Configure Cloudinary
@@ -13,24 +14,28 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_KEY_SECRET,
 });
 
-const productController = {
-  //Fetch all products
+const vendorProductController = {
+  //Fetch all products for a vendor
   fetchAll: async (req, res, next) => {
     try {
-      const allProducts = await Product.find();
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "Products fetched.",
-          data: allProducts,
-        });
+      const { vendorId } = req.params;
+
+      if (!vendorId) {
+        return createError(next, "Vendor id is required.", 404);
+      }
+
+      const allProducts = await VendorProduct.find({ vendorId });
+      res.status(200).json({
+        success: true,
+        message: "Vendor's products fetched.",
+        data: allProducts,
+      });
     } catch (error) {
       createError(next, error, 500);
     }
   },
 
-  //Create a product
+  //Create a product for a vendor
   create: async (req, res, next) => {
     const { description, title, price, category } = req.body;
     if (!description || !title || !price || !category) {
@@ -42,24 +47,24 @@ const productController = {
       return createError(next, "Images are required.", 400);
     }
 
-    try {
-      // Check if the provided category tag exists in the Category document
-      const categoryDocument = await Category.findOne({});
-      if (categoryDocument) {
-        const { tags } = categoryDocument;
-        if (!tags.includes(category)) {
-          tags.push(category); // Add the new category tag
-          await categoryDocument.save();
-        }
-      } else {
-        const newCategory = new Category({ tags: [category] });
-        await newCategory.save();
-      }
+    //Extract vendor id from req params
+    const { vendorId } = req.params;
+    if (!vendorId) {
+      return createError(next, "Vendor id is required.", 400);
+    }
 
+    //Check if vendor exists
+    const vendorData = await Vendor.findById(vendorId);
+    if (vendorData) {
+      return createError(next, "Vendor does not exist.", 404);
+    }
+
+    try {
       // Loop through uploaded images and upload to Cloudinary
       const images = await uploadImages(req, next);
 
-      const newProduct = new Product({
+      const newProduct = new VendorProduct({
+        vendorId,
         images,
         description,
         title,
@@ -73,23 +78,23 @@ const productController = {
         .status(201)
         .json({ success: true, message: "Product created.", data: newProduct });
     } catch (error) {
-      createError(next, error, 500);
+      createError(next, "Server error.", 500);
     }
   },
 
-  //Fetch a single product
+  //Fetch a single product from a vendor's records
   fetchSingle: async (req, res, next) => {
-    const productId = req.params.productId;
+    const { productId } = req.params;
 
     if (!productId) {
       return createError(next, "Product ID is required.", 404);
     }
 
     try {
-      const productData = await Product.findById(productId);
+      const productData = await VendorProduct.findById(productId);
 
       if (!productData) {
-        return createError(next, "No product found with that ID.", 404);
+        return createError(next, "No vendor has a product with that id.", 404);
       }
 
       const productReviews = await Review.find({ productId });
@@ -107,19 +112,19 @@ const productController = {
   //Update a product
   update: async (req, res, next) => {
     const { productId } = req.params;
-    const {productDetails} = req.body;
+    const productDetails = req.body;
 
     try {
-      const productData = await Product.findByIdAndUpdate(
+      const updatedSuccessfully = await VendorProduct.findByIdAndUpdate(
         { productId },
         productDetails
       );
 
-      if (!productData) {
+      if (!updatedSuccessfully) {
         createError(next, "No product found with that ID.", 404);
       }
 
-      if (productData) {
+      if (updatedSuccessfully) {
         res.status(200).json({ success: true, message: "Product updated." });
       }
     } catch (error) {
@@ -127,18 +132,18 @@ const productController = {
     }
   },
 
-  //Delete a product
+  //Delete a vendor's product
   deleteSingle: async (req, res, next) => {
     const { productId } = req.params;
 
     try {
-      const productData = await Product.findByIdAndDelete(productId);
+      const successfullyDeleted = await VendorProduct.findByIdAndDelete(productId);
 
-      if (!productData) {
+      if (!successfullyDeleted) {
         createError(next, "No product found with that ID.", 404);
       }
 
-      if (productData) {
+      if (successfullyDeleted) {
         res.status(200).json({ success: true, message: "Product deleted." });
       }
     } catch (error) {
@@ -147,4 +152,4 @@ const productController = {
   },
 };
 
-module.exports = productController;
+module.exports = vendorProductController;

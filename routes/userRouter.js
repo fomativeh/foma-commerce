@@ -15,5 +15,4 @@ userRouter.put("/cart/:userId", auth, userController.updateCart);
 
 userRouter.put("/wishlist/:userId", auth, userController.updateWishlist);
 
-
 module.exports = userRouter;

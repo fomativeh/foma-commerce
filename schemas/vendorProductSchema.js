@@ -12,7 +12,6 @@ const {
       title: String,
       price: String,
       category: String,
-      vendorName: String,
       reviews: [String],
     },
     { timestamps: true }

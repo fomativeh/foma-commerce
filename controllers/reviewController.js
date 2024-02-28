@@ -3,33 +3,19 @@ const Product = require("../schemas/productSchema");
 const Review = require("../schemas/reviewSchema");
 const User = require("../schemas/userSchema");
 
-const validateReaction = (reaction) => {
-  const validReactions = ["love", "like", "dislike", "warn"];
-  return validReactions.includes(reaction);
-};
-
 const reviewController = {
   //Create a review
   addReview: async (req, res, next) => {
-    const { authorEmail, comment, productId, reaction, authorUsername } =
+    const { authorEmail, comment, productId, authorUsername } =
       req.body;
 
     if (
       !authorEmail ||
       !comment ||
       !productId ||
-      !reaction ||
       !authorUsername
     ) {
       return createError(next, "Incomplete review details.", 400);
-    }
-
-    if (!validateReaction(reaction)) {
-      return createError(
-        next,
-        "Invalid reaction. Pick between: Love, Like, Dislike, Warn.",
-        400
-      );
     }
 
     try {
@@ -43,7 +29,7 @@ const reviewController = {
         return createError(next, "No user exists with that username.", 404);
       }
 
-      const targetProduct = await Product.findById({ productId });
+      const targetProduct = await Product.findById(productId);
       if (!targetProduct) {
         return createError(next, "That product doesn't exist.", 404);
       }
@@ -53,7 +39,6 @@ const reviewController = {
         authorUsername,
         comment,
         productId,
-        reaction,
       });
       await newReview.save();
 

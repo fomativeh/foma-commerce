@@ -10,7 +10,6 @@ const reviewSchema = new Schema(
     authorUsername:String,
     comment: String,
     productId:String,
-    reaction:String,
   },
   { timestamps: true }
 );

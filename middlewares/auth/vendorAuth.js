@@ -28,23 +28,20 @@ const vendorAuth = (req, res, next) => {
     }
 
     //Check if vendor exists in db
-    const vendorExists = await Vendor.findById({ vendorId });
-    if (!vendorExists) {
+    const vendorData = await Vendor.findById({ vendorId });
+    if (!vendorData) {
       return createError(next, "Vendor does not exist.", 404);
     }
-
-    //Re-assign for readability
-    const vendorToUpdate = vendorExists;
 
     const userId = decoded.userId;
 
     //Check if the client is the creator of this vendor account
-    if (vendorToUpdate.userId !== userId) {
-      return createError(next, "This is not your vendor account.", 401);
+    if (vendorData.userId !== userId) {
+      return createError(next, "You are either not a vendor or this is not your vendor account.", 401);
     }
 
     //Assign vendor info to req object
-    req.vendorInfo = vendorToUpdate
+    req.vendorInfo = vendorData
 
     next();
   });
