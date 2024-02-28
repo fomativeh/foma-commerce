@@ -23,9 +23,6 @@ const vendorAuth = (req, res, next) => {
 
     //Extract vendor id from req params
     const { vendorId } = req.params;
-    if (!vendorId) {
-      return createError(next, "Vendor id is required.", 404);
-    }
 
     //Check if vendor exists in db
     const vendorData = await Vendor.findById({ vendorId });

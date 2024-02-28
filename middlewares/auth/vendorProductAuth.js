@@ -30,9 +30,6 @@ const vendorProductAuth = (req, res, next) => {
 
     //Extract product id from req params
     const { productId } = req.params;
-    if (!productId) {
-      return createError(next, "Product id is required.", 404);
-    }
 
     //Check if the product exists
     const productData = await VendorProduct.findById(productId);
@@ -41,7 +38,7 @@ const vendorProductAuth = (req, res, next) => {
     }
 
     //Extract vendor id from product details
-    const vendorId = productData.vendorId;
+    const { vendorId } = productData;
 
     //Fetch vendor from db
     const vendorData = await Vendor.findById(vendorId);
@@ -51,7 +48,11 @@ const vendorProductAuth = (req, res, next) => {
 
     //Check if client is the owner of this vendor account
     if (userData._id !== vendorData.userId) {
-      return createError(next, "You didn't create this product, so you can't do this.", 404);
+      return createError(
+        next,
+        "You didn't create this product, so you can't do this.",
+        404
+      );
     }
 
     next();

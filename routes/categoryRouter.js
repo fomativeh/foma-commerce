@@ -1,10 +1,10 @@
 const categoryController = require("../controllers/categoryController");
 const express = require("express");
-const categoryAuth = require("../middlewares/auth/categoryAuth");
+const adminAuth = require("../middlewares/auth/adminAuth");
 const categoryRouter = express.Router();
 
-categoryRouter.post("/create", categoryAuth, categoryController.create);
-categoryRouter.delete("/:tag", categoryAuth, categoryController.delete);
+categoryRouter.post("/create", adminAuth, categoryController.create);
+categoryRouter.delete("/:tag", adminAuth, categoryController.delete);
 categoryRouter.get("/", categoryController.getTags);
 
 module.exports = categoryRouter;

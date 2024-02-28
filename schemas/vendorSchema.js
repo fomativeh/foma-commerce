@@ -6,7 +6,11 @@ const {
 
 const vendorSchema = new Schema(
   {
-    userId: String, //The id of the user applying for a vendor
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     storeName: String,
     storeDescription: String,
     logo: String,
@@ -15,7 +19,7 @@ const vendorSchema = new Schema(
       default:
         "https://res.cloudinary.com/vendornia/image/upload/v1702427915/defaultImages/defaultBanner_sg5zr6.svg",
     },
-    products: [String], //Array of products' Id
+    products: [{ type: ObjectId, ref: "Product" }],
   },
   { timestamps: true }
 );

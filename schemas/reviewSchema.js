@@ -6,10 +6,20 @@ const {
 
 const reviewSchema = new Schema(
   {
-    authorEmail: String,
-    authorUsername:String,
-    comment: String,
-    productId:String,
+    authorEmail: {
+      type: String,
+      required: true,
+    },
+    authorUsername: { type: String, required: true },
+    comment: {
+      type: String,
+      required: true,
+    },
+    productId: {
+      type: ObjectId,
+      ref: "Product",
+      required: true,
+    },
   },
   { timestamps: true }
 );

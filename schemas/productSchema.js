@@ -7,11 +7,14 @@ const {
 const productSchema = new Schema(
   {
     images: [String],
-    description: String,
-    title: String,
-    price: String,
+    description: { type: String, required: true },
+    title: { type: String, required: true },
+    price: {
+      type: Number,
+      required: true,
+    },
     category: String,
-    reviews: [String],
+    reviews: [{ type: ObjectId, ref: "Review" }],
   },
   { timestamps: true }
 );

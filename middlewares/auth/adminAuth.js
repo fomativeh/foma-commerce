@@ -3,7 +3,7 @@ const createError = require("../../helpers/createError");
 const User = require("../../schemas/userSchema");
 const accessKey = process.env.ATS;
 
-const categoryAuth = (req, res, next) => {
+const adminAuth = (req, res, next) => {
   //Retrieve access token from headers(Bearer `token`)
   const accessToken = req.headers.authorization.split(" ")[1];
 
@@ -20,15 +20,15 @@ const categoryAuth = (req, res, next) => {
     const userId = decoded.userId;
 
     //Check if client is a user
-    const userExists = await User.findById({ userId });
+    const userExists = await User.findById(userId);
     if (!userExists) {
       return createError(next, "User does not exist.", 404);
     }
 
-    const userAccount = userExists
+    const userAccount = userExists;
 
     //Check if user is an admin
-    if(!userAccount.isAdmin){
+    if (!userAccount.isAdmin) {
       return createError(next, "Only admins can do this.", 401);
     }
 
@@ -36,4 +36,4 @@ const categoryAuth = (req, res, next) => {
   });
 };
 
-module.exports = categoryAuth;
+module.exports = adminAuth;

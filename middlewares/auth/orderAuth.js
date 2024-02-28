@@ -3,7 +3,7 @@ const createError = require("../../helpers/createError");
 const User = require("../../schemas/userSchema");
 const accessKey = process.env.ATS;
 
-const productAuth = (req, res, next) => {
+const orderAuth = (req, res, next) => {
   //Retrieve access token from headers(Bearer `token`)
   const accessToken = req.headers.authorization.split(" ")[1];
 
@@ -17,23 +17,25 @@ const productAuth = (req, res, next) => {
       return createError(next, "Invalid token. Login again.", 403);
     }
 
-    const userId = decoded.userId;
+    //Extract user id from token
+    const userIdInToken = decoded.userId;
 
-    //Check if client is a user
-    const userExists = await User.findById(userId);
-    if (!userExists) {
-      return createError(next, "User does not exist.", 404);
+    //Extract user if from params and compare both
+    const { userId } = req.params;
+
+    //Compare both ids
+    if (userIdInToken !== userId) {
+      return createError(next, "This is not your account.", 401);
     }
 
-    const userAccount = userExists
-
-    //Check if user is an admin
-    if(!userAccount.isAdmin){
-      return createError(next, "Only admins can do this.", 401);
+    //Check if client is a user
+    const userData = await User.findById(userId);
+    if (!userData) {
+      return createError(next, "User does not exist.", 404);
     }
 
     next();
   });
 };
 
-module.exports = productAuth;
+module.exports = orderAuth;

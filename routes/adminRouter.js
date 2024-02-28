@@ -1,9 +1,8 @@
 const express = require("express");
-const categoryAuth = require("../middlewares/auth/categoryAuth");
+const adminAuth = require("../middlewares/auth/adminAuth");
 const adminController = require("../controllers/adminController");
 const adminRouter = express.Router();
 
-// Category auth works as admin auth
-adminRouter.post("/appoint-admin", categoryAuth, adminController.appointAdmin);
+adminRouter.post("/appoint-admin", adminAuth, adminController.appointAdmin);
 
 module.exports = adminRouter;
