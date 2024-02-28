@@ -8,7 +8,7 @@ const productAuth = (req, res, next) => {
   const accessToken = req.headers.authorization.split(" ")[1];
 
   if (!accessToken) {
-    return createError(next, "Unauthorized. Login to create a product.", 401);
+    return createError(next, "Unauthorized. Please login.", 401);
   }
 
   //Verify token's validity
