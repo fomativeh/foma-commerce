@@ -1,0 +1,113 @@
+const createError = require("../helpers/createError");
+const generateRefId = require("../helpers/generateRefId");
+const { createAccessToken, createRefreshToken } = require("../helpers/tokens");
+const User = require("../schemas/userSchema");
+const { hash, compare } = require("bcryptjs");
+
+const removePassword = (user) => {
+  // Exclude the password field from the response
+  const userWithoutPassword = { ...user._doc };
+  delete userWithoutPassword.password;
+  return userWithoutPassword;
+};
+
+const userController = {
+  //Sign up service
+  signUp: async (req, res, next) => {
+    const { username, email, password } = req.body;
+    if (!username || !email || !password) {
+      return createError(next, "Please provide all credentials.", 400);
+    }
+
+    try {
+      const userExists = await User.findOne({ username });
+      if (userExists) {
+        return createError(next, "Username is taken.", 400);
+      }
+
+      const emailExists = await User.findOne({ email });
+      if (emailExists) {
+        return createError(next, "Email already exists. Sign in.", 400);
+      }
+
+      const hashedPassword = await hash(password, 7);
+      const newUser = new User({ username, email, password: hashedPassword });
+      await newUser.save();
+
+      const tokenData = { userId: newUser._id, email: newUser.email };
+      const accessToken = createAccessToken(tokenData);
+      const refreshToken = createRefreshToken(tokenData);
+
+      const user = removePassword(newUser);
+
+      //Return userdata, access token and refresh token on sign up
+      return res.status(201).json({
+        success: true,
+        message: "Sign-up successful.",
+        data: { ...user, accessToken, refreshToken },
+      });
+    } catch (error) {
+      return createError(next, "Server error", 500);
+    }
+  },
+
+  //Sign in service
+  signIn: async (req, res, next) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return createError(next, "Incomplete credentials.", 400);
+    }
+
+    try {
+      const userExists = await User.findOne({ email });
+      if (!userExists) {
+        return createError(next, "User does not exist.", 404);
+      }
+
+      const passwordMatches = compare(password, userExists?.password);
+      if (!passwordMatches) {
+        return createError(next, "Incorrect Password.", 401);
+      }
+
+      const tokenData = { userId: userExists._id, email: userExists.email };
+      const accessToken = createAccessToken(tokenData);
+      const refreshToken = createRefreshToken(tokenData);
+
+      const user = removePassword(userExists);
+
+      return res.status(201).json({
+        success: true,
+        message: "Sign-in successful.",
+        data: { ...user, accessToken, refreshToken },
+      });
+    } catch (error) {
+      return createError(next, "Server error.", 500);
+    }
+  },
+
+  //Fetch user service
+  getSingleUser: async (req, res, next) => {
+    let { userId } = req.params;
+
+    if (!userId) {
+      return createError(next, "User id is required.", 400);
+    }
+
+    try {
+      const userExists = await User.findById({ userId });
+      if (!userExists) {
+        return createError(next, "User does not exist.", 404);
+      }
+
+      //Assign to new variable for readability
+      let userData = userExists
+
+      res.status(200).json({ success: true, message: "User data fetched", data: userData});
+    } catch (error) {
+      // console.log(error)
+      createError(next, "Server error.", 500);
+    }
+  },
+};
+
+module.exports = userController;
