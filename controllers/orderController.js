@@ -116,13 +116,15 @@ const orderController = {
   //Fetch all orders from the database
   getAll: async (req, res, next) => {
     try {
-      //Find and return all orders in db
+        //Find and return all orders in db
       const allOrdersInDb = await Order.find();
-      res.status(200).json({
-        success: true,
-        message: "All orders fetched.",
-        data: allOrdersInDb,
-      });
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "All orders fetched.",
+          data: allOrdersInDb,
+        });
     } catch (error) {
       createError(next, "Server error", 500);
     }

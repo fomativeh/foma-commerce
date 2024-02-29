@@ -194,6 +194,40 @@ const userController = {
       createError(next, "Server error", 500);
     }
   },
+
+  //Fetch all users (ADMIN PRIVILEGE)
+  getAll: async (req, res, next) => {
+    try {
+      //Find and return all the users in the db
+      const allUsersData = await User.find();
+      res.status(200).json({
+        success: true,
+        message: "All users fetched.",
+        data: allUsersData,
+      });
+    } catch (error) {
+      createError(next, "Server error", 500);
+    }
+  },
+
+  //Delete a user's account (ACCOUNT OWNER OR ADMIN RIGHTS)
+  deleteAUser: async (req, res, next) => {
+    try {
+      //Extract user id from req params
+      const { userId } = req.params;
+
+      if (!userId) {
+        return createError(next, "User id is required", 400);
+      }
+
+      //Find and delete user from db
+      await User.findByIdAndDelete(userId);
+
+      res.status(200).json({ success: true, message: "User account deleted." });
+    } catch (error) {
+      createError(next, "Server error", 500);
+    }
+  },
 };
 
 module.exports = userController;
