@@ -28,6 +28,7 @@ app.use("/api/category", categoryRouter);
 app.use("/api/review", reviewRouter);
 app.use("/api/vendor", vendorRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/order", orderRouter);
 
 //Custom error handler middleware
 app.use(errorHandler)

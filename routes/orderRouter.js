@@ -6,11 +6,11 @@ const orderRouter = express.Router();
 
 orderRouter.post("/create/:userId", orderAuth, orderController.create);
 orderRouter.delete("/:userId/:orderId", orderAuth, orderController.delete);
-orderRouter.get("/single/:userId", orderAuth, orderController.getSingle);
+orderRouter.get("/single/:userId/:orderId", orderAuth, orderController.getSingle);
 orderRouter.get("/all/:userId", orderAuth, orderController.getAllForUser);
-orderRouter.patch("/:orderId", orderAuth, orderController.getAllForUser);
+orderRouter.patch("/:userId/:orderId", orderAuth, orderController.updateOrder);
 
-//Get all orders from db(Only Admins)
+//Get all orders from DB (Only Admins)
 orderRouter.get("/all", adminAuth, orderController.getAll);
 
 module.exports = orderRouter;
