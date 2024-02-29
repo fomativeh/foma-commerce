@@ -1,8 +1,0 @@
-USERS: ADMIN, USERS, VENDORS
-FEATURES:
-Account creation, login, add to cart
-Fetch all product, fetch single product, add review
-Vendor account creation, vendor create, update, delete product
-admin create, update, delete product
-Admin appointment
-Authorization middlewares for security
