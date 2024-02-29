@@ -3,7 +3,7 @@ const express = require("express");
 const multerStorage = require("../helpers/multerStorage");
 const multer = require("multer");
 const vendorAuth = require("../middlewares/auth/vendorAuth");
-const { multerMiddleware } = require("../middlewares/multerMiddleware");
+const multerMiddleware  = require("../middlewares/multerMiddleware");
 const vendorRouter = express.Router();
 
 //Routes

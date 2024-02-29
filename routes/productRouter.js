@@ -1,6 +1,6 @@
 const productController = require("../controllers/productController");
 const express = require("express");
-const { multerMiddleware } = require("../middlewares/multerMiddleware");
+const  multerMiddleware = require("../middlewares/multerMiddleware");
 const productAuth = require("../middlewares/auth/productAuth");
 const productRouter = express.Router();
 

@@ -1,9 +1,9 @@
-import multer from "multer";
-import multerStorage from "../helpers/multerStorage";
+const multer = require("multer");
+const multerStorage = require("../helpers/multerStorage");
 
 const upload = multer({ storage: multerStorage });
 
-export const multerMiddleware = (req, res, next) => {
+const multerMiddleware = (req, res, next) => {
   upload.array("images")(req, res, (err) => {
     if (err) {
       console.error("Multer error:", err);
@@ -13,3 +13,5 @@ export const multerMiddleware = (req, res, next) => {
     next();
   });
 };
+
+module.exports = multerMiddleware;

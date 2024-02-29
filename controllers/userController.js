@@ -1,5 +1,4 @@
 const createError = require("../helpers/createError");
-const generateRefId = require("../helpers/generateRefId");
 const { createAccessToken, createRefreshToken } = require("../helpers/tokens");
 const User = require("../schemas/userSchema");
 const { hash, compare } = require("bcryptjs");

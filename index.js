@@ -11,13 +11,15 @@ const errorHandler = require("./middlewares/errorHandler");
 const categoryRouter = require("./routes/categoryRouter");
 const reviewRouter = require("./routes/reviewRouter");
 const adminRouter = require("./routes/adminRouter");
+const orderRouter = require("./routes/orderRouter");
+const swaggerjsdoc = require("swagger-jsdoc");
+const swaggerui = require("swagger-ui-express");
 
 //Middlewares
 app.use(cors());
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 
 //Routes
 app.get("/", (req, res) => res.send("Hello from root route."));
@@ -31,9 +33,29 @@ app.use("/api/admin", adminRouter);
 app.use("/api/order", orderRouter);
 
 //Custom error handler middleware
-app.use(errorHandler)
+app.use(errorHandler);
 
-// Configure server port 
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "API Documetation for foma-commerce",
+      description:
+        "Here you can find and test all the api endpoints for this application.",
+    },
+    servers: [
+      {
+        url: "http://localhost:5000",
+      },
+    ],
+  },
+  apis: ["./routes/*.js"],
+};
+
+const spacs = swaggerjsdoc(options);
+app.use("/api-docs", swaggerui.serve, swaggerui.setup(spacs));
+
+// Configure server port
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
