@@ -39,7 +39,7 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "API Documetation for foma-commerce",
+      title: "API Documentation for foma-commerce",
       description:
         "Here you can find and test all the api endpoints for this application.",
     },
@@ -54,6 +54,13 @@ const options = {
 
 const spacs = swaggerjsdoc(options);
 app.use("/api-docs", swaggerui.serve, swaggerui.setup(spacs));
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_KEY_SECRET,
+});
 
 // Configure server port
 const PORT = process.env.PORT || 5000;
